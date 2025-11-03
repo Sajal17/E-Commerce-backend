@@ -1,0 +1,11 @@
+package com.sa.M_Mart.dto;
+
+public record AddressDTO(
+        String fullName,
+        String phone,
+        String street,
+        String city,
+        String state,
+        String country,
+        String zip
+) { }
