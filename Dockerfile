@@ -1,15 +1,26 @@
-# Step 1: Use lightweight JDK image
-FROM eclipse-temurin:21-jdk-alpine
+# Stage 1: Build the JAR
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
-
-# Step 2: Set working directory inside the container
 WORKDIR /app
 
-# Step 3: Copy your JAR file (after you build it)
-COPY target/M-Mart-0.0.1-SNAPSHOT.jar app.jar
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN ./mvnw dependency:go-offline || true
 
-# Step 4: Expose the port your app runs on
+# Copy the rest of the project
+COPY . .
+
+# Build the JAR
+RUN ./mvnw clean package -DskipTests
+
+# Stage 2: Run the app
+FROM eclipse-temurin:21-jdk-alpine
+
+WORKDIR /app
+
+# Copy JAR from builder stage
+COPY --from=builder /app/target/M-Mart-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
 
-# Step 5: Run the JAR file
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
