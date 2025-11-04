@@ -58,7 +58,7 @@ public class Product {
       private SellerProfile seller;
 
       @Column(name = "is_active")
-      private boolean isActive = true;
+      private boolean isActive;
 
       private boolean verified=false;
 

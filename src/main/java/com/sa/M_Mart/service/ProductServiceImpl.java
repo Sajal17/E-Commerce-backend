@@ -54,6 +54,7 @@ public class ProductServiceImpl implements ProductService {
                 .quantity(request.quantity())
                 .seller(profile)
                 .verified(true)
+                .isActive(true)
                 .build();
 
         Product saved = productRepository.save(product);
@@ -102,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         product.setActive(false);
+        product.setFeatured(false);
         productRepository.save(product);
     }
 
@@ -192,6 +194,7 @@ public class ProductServiceImpl implements ProductService {
                 product.getQuantity(),
                 product.getSeller().getUser().getId(),
                 product.isVerified(),
+                product.isActive(),
                 product.getImageUrl(),
                 product.getImageType()
         );

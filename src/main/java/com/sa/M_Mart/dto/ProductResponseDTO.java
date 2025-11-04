@@ -19,6 +19,7 @@ public record ProductResponseDTO(
         int quantity,
         Long sellerId,
         boolean verified,
+        boolean isActive,
         String imageUrl,
         String imageType
 ) {}
