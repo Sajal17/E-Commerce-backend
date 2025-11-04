@@ -51,13 +51,16 @@ public class Product {
       private String imageUrl;
 
       @Column(name = "image_type",length = 25)
-      private String imageType;  // jpeg , png
+      private String imageType;
 
       @ManyToOne(fetch = FetchType.LAZY)
       @JoinColumn(name = "seller_id", nullable = false)
       private SellerProfile seller;
 
-     private boolean verified=false; // admin verification status
+      @Column(name = "is_active")
+      private boolean isActive = true;
+
+      private boolean verified=false;
 
       private boolean featured;
 }

@@ -26,8 +26,6 @@ public class AuthServiceImpl implements AuthService{
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
-   // private JwtUtil jwtUtil;
-
     @Override
     public ResponseEntity<?> login(AuthRequestDTO authRequest, HttpServletResponse response) {
         String username = authRequest.username();
@@ -38,28 +36,26 @@ public class AuthServiceImpl implements AuthService{
                 .or(()->userRepository.findByEmail(username))
                 .map(user -> {
 
-                    //  Check password
                     if (!passwordEncoder.matches(password, user.getPassword())) {
                         return ResponseEntity.status(401)
                                 .body(Map.of("message", "Invalid credentials"));
                     }
 
-                    //  Map Set<UserRole> → Set<Role> for JWT
                     Set<String> roles = (user.getRoles() != null ? user.getRoles() : Set.<UserRole>of())
                             .stream()
-                            .map(r -> r.getRole())  // lambda, r is now UserRole
+                            .map(r -> r.getRole())
                             .map(Enum::name)
                             .collect(Collectors.toSet());
-                    // Generate JWT + Refresh token
+
                     String accessToken = jwtService.generateAccessToken(user.getUsername(), roles);
-                    // Create refresh token
+
                     RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
                     ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken.getToken())
                             .httpOnly(true)
-                            .secure(true) // set true in production
+                            .secure(true)
                             .path("/api/auth/refresh")
-                            .maxAge(30 * 24 * 60 * 60) // 30 days
+                            .maxAge(30 * 24 * 60 * 60)
                             .sameSite("Lax")
                             .build();
 
@@ -80,18 +76,15 @@ public class AuthServiceImpl implements AuthService{
 
         return refreshTokenService.findByToken(refreshToken)
                 .map(rt -> {
-                    //  Check if refresh token expired
                     if (refreshTokenService.isExpired(rt)) {
                         refreshTokenService.deleteByUser(rt.getUser());
                         return ResponseEntity.status(401).body("Refresh token expired");
                     }
-                    //  Map roles for JWT
                     Set<String> roles = rt.getUser().getRoles()
                             .stream()
-                            .map(UserRole::getRole)      // get Role enum from UserRole
-                            .map(Enum::name)             // convert Role enum → String
+                            .map(UserRole::getRole)
+                            .map(Enum::name)
                             .collect(Collectors.toSet());
-                    // Generate new access token
                     String newAccessToken = jwtService.generateAccessToken(rt.getUser().getUsername(), roles);
                     return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
                 })
@@ -104,12 +97,12 @@ public class AuthServiceImpl implements AuthService{
             refreshTokenService.findByToken(refreshToken)
                     .ifPresent(rt -> refreshTokenService.deleteByUser(rt.getUser()));
         }
-        // Clear cookie
+
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(true) // must be true in production
+                .secure(true)
                 .path("/api/auth/refresh")
-                .maxAge(0) // delete immediately
+                .maxAge(0)
                 .sameSite("Lax")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());

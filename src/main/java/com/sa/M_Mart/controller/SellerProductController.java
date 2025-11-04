@@ -35,7 +35,6 @@ public class SellerProductController {
     private final SellerRepository sellerRepository;
     private final ImageUploadService imageUploadService;
 
-    // Get all products by seller
     @GetMapping("/products")
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts(@AuthenticationPrincipal UserPrincipal principal) {
         Long sellerId = principal.getUser().getId();
@@ -43,14 +42,12 @@ public class SellerProductController {
         return ResponseEntity.ok(products);
     }
 
-    // Get single product by ID
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable Long id) {
         ProductResponseDTO product = productService.getProduct(id);
         return ResponseEntity.ok(product);
     }
 
-    // Add new product
     @PostMapping(value = "/products", consumes = {"multipart/form-data"})
     public ResponseEntity<ProductResponseDTO> addProduct(
             @RequestParam String name,
@@ -72,20 +69,16 @@ public class SellerProductController {
                 available, quantity, null, null
         );
 
-        // Upload image
         String imageUrl = null;
         if (imageFile != null && !imageFile.isEmpty()) {
             imageUrl = imageUploadService.uploadImage(imageFile, "products", name, false);
         }
 
-        // Save product
         ProductResponseDTO saved = productService.addProduct(dto, principal.getUser().getId(), imageUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
 
-
-    // edit product
     @PutMapping("/products/{productId}")
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable Long productId,
@@ -93,21 +86,16 @@ public class SellerProductController {
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserPrincipal principal
     ) throws IOException {
-
-        // Get sellerId from authenticated user
         Long sellerId = principal.getUser().getId();
-        // Upload image if present
         String imageUrl = null;
         if (imageFile != null && !imageFile.isEmpty()) {
             imageUrl = imageUploadService.uploadImage(imageFile, "products", productRequestDTO.name(), false);
         }
 
-        // Update product
         ProductResponseDTO updated = productService.updateProduct(productId, productRequestDTO, sellerId, imageUrl);
         return ResponseEntity.ok(updated);
     }
 
-    // Delete product
     @DeleteMapping("/products/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId,
                                                 @AuthenticationPrincipal UserPrincipal principal) {
@@ -116,11 +104,10 @@ public class SellerProductController {
         return ResponseEntity.ok("Product deleted successfully");
     }
 
-    // Search products by keyword for a seller
     @GetMapping("/{sellerId}/products/search")
     public ResponseEntity<List<ProductResponseDTO>> searchProducts(
-            @PathVariable Long sellerId,     //  from URL
-            @RequestParam String keyword     //  from query param
+            @PathVariable Long sellerId,
+            @RequestParam String keyword
     ) {
         List<ProductResponseDTO> products = productService.searchProducts(keyword)
                 .stream()
@@ -141,7 +128,6 @@ public class SellerProductController {
 
         Page<OrderDTO> orderPage = orderService.getOrdersBySellerId(sellerId, page, size);
 
-        // Build stable JSON manually
         return ResponseEntity.ok(
                 new PageResponse<>(
                         orderPage.getContent(),

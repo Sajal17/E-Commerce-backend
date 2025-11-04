@@ -25,34 +25,29 @@ public class UserServiceImpl implements UserService {
     private final UserManager userManager;
     private final CartRepository cartRepository;
 
-    // Register as normal user
     @Override
     @Transactional
     public UserResponseDTO registerUser(RegistrationRequestDTO request) {
-        // Validate password match
         if (!request.password().equals(request.confirmPassword())) {
             throw new ApiException("Passwords do not match", 400);
         }
 
-        // Create user
         AppUser user= userManager.createUser(
                 request.username(),
                 request.password(),
                 request.email(),
                 request.phoneNumber(),
-                new HashSet<>()  // fixed role for users
+                new HashSet<>()
         );
-       // Create role and attach back-reference
+
         UserRole userRole = new UserRole();
         userRole.setRole(Role.ROLE_USER);
         userRole.setUser(user);
 
-        // 3. Add role to user
         user.getRoles().add(userRole);
-        // 4. Save user again
+
         userRepository.save(user);
 
-        // create cart only for ROLE_USER
         boolean isBuyer = user.getRoles().stream()
                 .anyMatch(r -> r.getRole() == Role.ROLE_USER);
         if (isBuyer) {
@@ -83,13 +78,10 @@ public class UserServiceImpl implements UserService {
         if (request.phoneNumber() != null && !request.phoneNumber().isBlank())
             user.setPhoneNumber(request.phoneNumber());
 
-        // Update only allowed fields
         if (request.firstName() != null) user.setFirstName(request.firstName());
         if (request.lastName() != null) user.setLastName(request.lastName());
         if (request.addresses() != null) {
             user.getAddresses().clear();
-
-            // Add new addresses
 
             for (AddressDTO addressDTO : request.addresses()) {
                 UserAddress address = new UserAddress();
@@ -103,7 +95,6 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        // Save user
         userRepository.save(user);
 
         return mapToDTO(user);
@@ -111,11 +102,10 @@ public class UserServiceImpl implements UserService {
 
     private UserResponseDTO mapToDTO(AppUser user) {
 
-//        List<AddressDTO> addressDTOS=user.getAddresses().stream()
         List<AddressDTO> addressDTOS = (user.getAddresses() != null ? user.getAddresses() : List.of())
                 .stream()
                 .map(addr -> {
-                    UserAddress a = (UserAddress) addr; // cast to UserAddress
+                    UserAddress a = (UserAddress) addr;
                     return new AddressDTO(
                             a.getFullName()!=null ? a.getFullName() : "",
                             a.getPhone() !=null ? a.getPhone() :"",

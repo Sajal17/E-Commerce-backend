@@ -20,8 +20,6 @@ public class AuthController {
     private final SellerService sellerService;
     private final UserService userService;
 
-    // Register user
-
     @Transactional
     @PostMapping("/register/user")
     public ResponseEntity<ApiResponse<?>> registerUser(@RequestBody @Valid RegistrationRequestDTO request) {
@@ -32,7 +30,7 @@ public class AuthController {
                   "User register successfully",dto));
 
     }
-    // Register Seller
+
     @Transactional
     @PostMapping("/register/seller")
     public ResponseEntity<ApiResponse<?>> registerSeller(@RequestBody @Valid SellerRegistrationDTO request) {
@@ -41,22 +39,18 @@ public class AuthController {
 
         return ResponseEntity.ok(ApiResponse.success("Seller registered successfully", dto));
     }
-    //Login endpoint
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid AuthRequestDTO authRequest,
                                    HttpServletResponse response) {
-        //System.out.println("POST /auth/login called with username: ");
         return authService.login(authRequest, response);
     }
 
-    //Refresh access token
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@CookieValue(value = "refreshToken",
                                       required = false) String refreshToken) {
         return authService.refreshAccessToken(refreshToken);
     }
 
-    //Logout
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<?>> logout(@CookieValue(value = "refreshToken", required = false) String refreshToken,
                                          HttpServletResponse response) {

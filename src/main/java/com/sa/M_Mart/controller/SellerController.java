@@ -17,7 +17,6 @@ public class SellerController {
 
     private final SellerService sellerService;
 
-    // Get own profile
     @GetMapping("/profile")
     public ResponseEntity<SellerProfileDTO> getOwnProfile(Principal principal) {
         String username = principal.getName();
@@ -25,7 +24,6 @@ public class SellerController {
         return ResponseEntity.ok(profile);
     }
 
-    // Update own profile
     @PutMapping("/profile")
     public ResponseEntity<SellerProfileDTO> updateOwnProfile(@RequestBody SellerProfileDTO request,
                                                              Principal principal) {

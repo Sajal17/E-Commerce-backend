@@ -21,41 +21,33 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Customer who placed the order
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser customer;
 
-    // List of products in the order
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items= new ArrayList<>();
 
-    // Total price of the order
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
-    // Shipping address (can be expanded into an Address entity if needed)
     @Column(nullable = false)
     private String shippingAddress;
 
-    // Payment status
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus paymentStatus;
 
-    // Order status
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
-    // Timestamps
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    // Automatically set timestamps
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -67,7 +59,6 @@ public class Order {
         updatedAt = LocalDateTime.now();
     }
 
-    // Enum for order status
     public enum OrderStatus {
         PENDING,
         PROCESSING,
@@ -77,7 +68,6 @@ public class Order {
         RETURNED
     }
 
-    // Enum for payment status
     public enum PaymentStatus {
         PENDING,
         COMPLETED,

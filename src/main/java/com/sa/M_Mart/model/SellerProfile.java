@@ -16,19 +16,16 @@ public class SellerProfile {
      @GeneratedValue(strategy = GenerationType.IDENTITY)
      private Long id;
 
-     // Link SellerProfile to AppUser (seller is still a user)
      @OneToOne(fetch = FetchType.EAGER)
      @JoinColumn(name = "user_id", nullable = false, unique = true)
      private AppUser user;
 
-     // Company details
      @Column(nullable = false)
      private String companyName="N/A";
 
      @Column(nullable = false)
      private String businessAddress="";
 
-     // Banking details
      @Column(nullable = false)
      private String bankAccountNumber="";
 

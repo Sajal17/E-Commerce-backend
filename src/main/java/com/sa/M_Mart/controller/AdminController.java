@@ -1,15 +1,12 @@
 package com.sa.M_Mart.controller;
 
 import com.sa.M_Mart.dto.*;
-import com.sa.M_Mart.security.UserPrincipal;
 import com.sa.M_Mart.service.AdminService;
-import com.sa.M_Mart.service.ProductService;
 import com.sa.M_Mart.service.SellerService;
 import com.sa.M_Mart.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -24,7 +21,6 @@ public class AdminController {
     private final AdminService adminService;
     private final SellerService sellerService;
     private final UserService userService;
-    private final ProductService productService;
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> registerAdmin(@RequestBody RegistrationRequestDTO request,
                                                         Principal principal) {
@@ -41,7 +37,6 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Admin profile retrieved", dto));
     }
 
-    // Admin verifies seller
     @PostMapping("/seller/verify")
     public ResponseEntity<String> verifySeller(@RequestParam String username,
                                                Principal principal) {

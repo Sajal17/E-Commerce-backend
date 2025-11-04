@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        // Skip JWT check for public routes
         for (String prefix : PUBLIC_URL_PREFIXES) {
             if (requestURI.startsWith(prefix)) {
                 filterChain.doFilter(request, response);

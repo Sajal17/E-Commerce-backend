@@ -8,11 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -30,7 +27,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // Generate Access Token
     public String generateAccessToken(String username, Set<String> roles){
         return Jwts.builder()
                 .setSubject(username)
@@ -41,8 +37,6 @@ public class JwtService {
                 .compact();
     }
 
-    //Generate Refresh Token
-
     public String generateRefreshToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -52,8 +46,6 @@ public class JwtService {
                 .compact();
     }
 
-    // Validate and parse token
-
     public Claims validateToken(String token) {
         return Jwts.parser()
                 .setSigningKey(getSigningKey())
@@ -62,12 +54,10 @@ public class JwtService {
                 .getBody();
     }
 
-    // Extract username from token
     public String extractUsername(String token){
         return
                 validateToken(token).getSubject();
     }
-    // Extract roles
     public Set<String> extractRoles(String token) {
         Object rolesObj = validateToken(token).get("roles");
         if (rolesObj instanceof java.util.List<?> list) {

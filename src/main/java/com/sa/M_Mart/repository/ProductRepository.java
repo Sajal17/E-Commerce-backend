@@ -11,19 +11,17 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
 
-    List<Product> findByCategoryIgnoreCase(String category);
+    List<Product> findByCategoryIgnoreCaseAndIsActiveTrue(String category);
 
-    // Find all products for a seller
-    List<Product> findBySeller(SellerProfile seller);
+    List<Product> findBySellerAndIsActiveTrue(SellerProfile seller);
 
-    // Optional: find active products for customers
-    List<Product> findByVerifiedTrue();
+    List<Product> findByVerifiedTrueAndIsActiveTrue();
 
-    // Search by name containing keyword (case-insensitive)
-    List<Product> findByNameContainingIgnoreCase(String keyword);
+    List<Product> findByNameContainingIgnoreCaseAndIsActiveTrue(String keyword);
 
-    // Extra custom queries only if needed
     Optional<Product> findByName(String name);
+
+    List<Product> findByIsActiveTrue();
 
     List<Product>findByFeaturedTrue();
 }

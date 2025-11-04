@@ -41,12 +41,6 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", ex.getMessage()));
     }
 
-//    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-//    public ResponseEntity<?> handleDuplicateKeyException(org.springframework.dao.DataIntegrityViolationException ex){
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(Map.of("message", "Username or email already exists"));
-//    }
 @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
 public ResponseEntity<?> handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
     String message = ex.getMostSpecificCause().getMessage();

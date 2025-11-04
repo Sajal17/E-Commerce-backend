@@ -2,7 +2,6 @@ package com.sa.M_Mart.service;
 
 import com.sa.M_Mart.dto.RegistrationRequestDTO;
 import com.sa.M_Mart.dto.UserResponseDTO;
-import com.sa.M_Mart.model.AppUser;
 
 import java.util.Set;
 

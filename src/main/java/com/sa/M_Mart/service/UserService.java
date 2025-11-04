@@ -9,10 +9,8 @@ public interface UserService {
 
     UserResponseDTO registerUser(RegistrationRequestDTO user);
 
-    // Fetch user profile by username
     UserResponseDTO getUserByUsername(String username);
 
-    // Update user profile
     UserResponseDTO updateUserProfile(String username, UserUpdateRequestDTO updateRequest);
 }
 

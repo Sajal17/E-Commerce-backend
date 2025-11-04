@@ -18,7 +18,6 @@ public class CustomerProductController {
 
     private final ProductService productService;
     private final ProductRepository productRepository;
-    /** GET all products */
     @GetMapping
     public List<ProductResponseDTO> getProducts(@RequestParam(required = false) String category) {
         if (category != null) {
@@ -26,7 +25,6 @@ public class CustomerProductController {
         }
         return productService.getAllProducts();
     }
-    /** GET product by ID */
     @GetMapping("/{id}")
     public ProductResponseDTO getProduct(@PathVariable Long id) {
         return productService.getProduct(id);

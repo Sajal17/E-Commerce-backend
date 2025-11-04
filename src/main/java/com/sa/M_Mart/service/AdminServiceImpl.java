@@ -21,8 +21,6 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserRepository userRepository;
     private final UserManager userManager;
-
-    // --- Interface methods ---
     @Override
     public UserResponseDTO getUserByUsername(String username) {
         AppUser user = findUser(username);
@@ -53,15 +51,12 @@ public class AdminServiceImpl implements AdminService {
                 new HashSet<>()
         );
 
-// 2. Create role and attach back-reference
         UserRole userRole = new UserRole();
         userRole.setRole(Role.ROLE_ADMIN);
         userRole.setUser(user);
 
-// 3. Add role to user
         user.getRoles().add(userRole);
 
-// 4. Save user again
         userRepository.save(user);
         return toDTO(user);
     }
@@ -80,8 +75,8 @@ public class AdminServiceImpl implements AdminService {
         Set<UserRole> updatedRoles = newRoles.stream()
                 .map(roleStr -> {
                     UserRole ur = new UserRole();
-                    ur.setRole(Role.valueOf(roleStr)); // String → Enum
-                    ur.setUser(user);                 // set back-reference
+                    ur.setRole(Role.valueOf(roleStr));
+                    ur.setUser(user);
                     return ur;
                 })
                 .collect(Collectors.toSet());
@@ -105,14 +100,12 @@ public class AdminServiceImpl implements AdminService {
         userRepository.delete(user);
     }
 
-    // --- Helper methods ---
     private AppUser findUser(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 
     private UserResponseDTO toDTO(AppUser user) {
-        // Convert addresses to AddressDTO
         List<com.sa.M_Mart.dto.AddressDTO> addresses =
                 user.getAddresses() != null
                         ? user.getAddresses().stream()
@@ -130,10 +123,10 @@ public class AdminServiceImpl implements AdminService {
 
         Set<Role> roles = (user.getRoles() != null ? user.getRoles() : Set.of())
                 .stream()
-                .map(ur -> ((UserRole) ur).getRole()) // keep as Role enum
+                .map(ur -> ((UserRole) ur).getRole())
                 .collect(Collectors.toSet());
         if (roles.contains(Role.ROLE_ADMIN) || roles.contains(Role.ROLE_SUPERADMIN)) {
-            addresses = List.of(); // override addresses for admins/superadmins
+            addresses = List.of();
         }
         return new UserResponseDTO(
                 user.getId(),

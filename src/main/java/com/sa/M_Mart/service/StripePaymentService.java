@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
-@Profile("stripe") // optional, to use Stripe profile
+@Profile("stripe")
 public class StripePaymentService implements PaymentGateway {
 
     private final PaymentRepository paymentRepository;
@@ -46,7 +46,7 @@ public class StripePaymentService implements PaymentGateway {
 
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                 .setAmount(amountInCents)
-                .setCurrency("usd") // or "inr" for India
+                .setCurrency("inr")
                 .setReceiptEmail(customer.getEmail())
                 .build();
 
@@ -56,7 +56,7 @@ public class StripePaymentService implements PaymentGateway {
                 .customer(customer)
                 .order(order)
                 .amount(order.getTotalPrice())
-                .method(Payment.PaymentMethod.CARD) // default //error
+                .method(Payment.PaymentMethod.CARD)
                 .status(Payment.PaymentStatus.PENDING)
                 .transactionId(intent.getId())
                 .build();
@@ -66,16 +66,12 @@ public class StripePaymentService implements PaymentGateway {
         return mapToDTO(payment);
     }
 
-    //  Handle Payment Success
     @Override
     public Payment handlePaymentSuccess(String paymentId) {
         Payment payment = paymentRepository.findByTransactionId(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        // Update payment status
         payment.setStatus(Payment.PaymentStatus.COMPLETED);
-
-        // Also mark order as paid / processing
         Order order = payment.getOrder();
         order.setOrderStatus(Order.OrderStatus.PROCESSING);
 
@@ -84,8 +80,6 @@ public class StripePaymentService implements PaymentGateway {
 
         return payment;
     }
-
-    // Handle Payment Failure
 
     @Override
     public void handlePaymentFailure(String paymentId) {

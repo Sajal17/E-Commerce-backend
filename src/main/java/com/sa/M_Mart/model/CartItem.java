@@ -37,7 +37,6 @@ public class CartItem {
 
         CartItem other =(CartItem) obj;
         return id !=null && id.equals(other.getId());
-        // return id != null && id.equals(((CartItem) o).getId());
     }
 
     @Override

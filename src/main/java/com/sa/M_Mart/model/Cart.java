@@ -23,33 +23,27 @@ public class Cart {
     @Column(name = "cart_id",updatable = false,nullable = false)
     private Long id;
 
-    // A user have multiple carts
     @ManyToOne(optional = false,fetch = FetchType.LAZY)
-    // fetch = FetchType.LAZY → avoids loading unnecessary data.
     @JoinColumn(name = "user_id",nullable = false)
     private AppUser user;
 
     @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true)
-    // Cascade & orphanRemoval -> ensures items are auto-deleted when removed from cart.
     private List<CartItem>items=new ArrayList<>();
 
-    // Convenience method for adding item
     public void addItem(CartItem item){
         this.items.add(item); //add to list
         item.setCart(this);
     }
 
-    // Convenience method for removing items
     public void removeItem(CartItem item){
-        this.items.remove(item); // remove from list
+        this.items.remove(item);
         item.setCart(null);
     }
 
-    // equals & hashCode based only on ID
     @Override
     public boolean equals(Object obj) {
-        if(this==obj) return true; // same object
-        if (!(obj instanceof Cart)) return false; // not a cart
+        if(this==obj) return true;
+        if (!(obj instanceof Cart)) return false;
         Cart other =(Cart) obj;
         return id !=null && id.equals(other.getId());
 

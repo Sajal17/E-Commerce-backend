@@ -17,5 +17,5 @@ public record UserResponseDTO (
         @JsonProperty("lastName") String lastName,
         @JsonProperty("addresses") List<AddressDTO> addresses,
         @JsonProperty("role") Set<Role> role,
-        @JsonProperty("verified") boolean verified // OTP verified or not
+        @JsonProperty("verified") boolean verified
 ){ }

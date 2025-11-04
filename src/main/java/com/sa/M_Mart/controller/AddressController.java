@@ -24,14 +24,12 @@ public class AddressController {
         return ResponseEntity.ok(saved);
     }
 
-    // Get all addresses for logged-in user
     @GetMapping
     public ResponseEntity<List<AddressResponseDTO>> getUserAddresses(Principal principal) {
         List<AddressResponseDTO> addresses = addressService.getAllAddresses(principal.getName());
         return ResponseEntity.ok(addresses);
     }
 
-    // Update address
     @PutMapping("/{id}")
     public ResponseEntity<AddressResponseDTO> updateAddress(
             Principal principal,
@@ -42,7 +40,6 @@ public class AddressController {
         return ResponseEntity.ok(updated);
     }
 
-    // Delete address
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(Principal principal, @PathVariable Long id) {
         addressService.deleteAddress(principal.getName(), id);

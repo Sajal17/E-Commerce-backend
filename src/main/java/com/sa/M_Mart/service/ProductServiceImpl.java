@@ -25,9 +25,6 @@ public class ProductServiceImpl implements ProductService {
     private final UserRepository userRepository;
     private final SellerRepository sellerRepository;
 
-//    @Value("${app.image.base-url}")
-//    private String baseImageUrl;
-
     @Override
     @Transactional
     public ProductResponseDTO addProduct(ProductRequestDTO request, Long sellerId, String imageUrl) {
@@ -35,13 +32,14 @@ public class ProductServiceImpl implements ProductService {
         AppUser seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
 
-        //  Fetch SellerProfile safely
         SellerProfile profile = seller.getSellerProfile();
         if (profile == null) {
             throw new ApiException("Seller profile not found for this user. Please complete seller registration.", 400);
         }
 
-        boolean isVerifiedSeller = profile.isVerified();
+        if (!profile.isVerified()) {
+            throw new ApiException("Your Profile is not verified. You cannot add products yet.", 403);
+        }
 
         Product product = Product.builder()
                 .name(request.name())
@@ -55,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
                 .imageType(request.imageType())
                 .quantity(request.quantity())
                 .seller(profile)
-                .verified(isVerifiedSeller)
+                .verified(true)
                 .build();
 
         Product saved = productRepository.save(product);
@@ -103,8 +101,10 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("Unauthorized to delete this product");
         }
 
-        productRepository.delete(product);
+        product.setActive(false);
+        productRepository.save(product);
     }
+
 
     @Override
     public ProductResponseDTO getProduct(Long productId) {
@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findByVerifiedTrue()
+        return productRepository.findByVerifiedTrueAndIsActiveTrue()
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -123,9 +123,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponseDTO> getProductsByCategory(String category) {
-        List<Product> products = productRepository.findByCategoryIgnoreCase(category);
+        List<Product> products = productRepository.findByCategoryIgnoreCaseAndIsActiveTrue(category);
         products.forEach(p -> System.out.println(p.getName() + " verified=" + p.isVerified()));
-        return productRepository.findByCategoryIgnoreCase(category)
+        return productRepository.findByCategoryIgnoreCaseAndIsActiveTrue(category)
                 .stream()
                 .filter(Product::isVerified)
                 .map(this::toDTO)
@@ -140,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
         SellerProfile profile = seller.getSellerProfile();
         if (profile == null) return List.of();
 
-        return productRepository.findBySeller(profile) // pass full SellerProfile
+        return productRepository.findBySellerAndIsActiveTrue(profile)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -150,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponseDTO> searchProducts(String keyword) {
-        return productRepository.findByNameContainingIgnoreCase(keyword)
+        return productRepository.findByNameContainingIgnoreCaseAndIsActiveTrue(keyword)
                 .stream()
                 .filter(Product::isVerified)
                 .map(this::toDTO)
@@ -162,6 +162,20 @@ public class ProductServiceImpl implements ProductService {
         AppUser seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
         return seller.getId();
+    }
+
+
+    @Transactional
+    public void restoreProduct(Long productId, Long sellerId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (!product.getSeller().getUser().getId().equals(sellerId)) {
+            throw new RuntimeException("Unauthorized to restore this product");
+        }
+
+        product.setActive(true);
+        productRepository.save(product);
     }
 
 

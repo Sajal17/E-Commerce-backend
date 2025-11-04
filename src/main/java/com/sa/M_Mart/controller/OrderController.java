@@ -25,11 +25,9 @@ public class OrderController {
             @RequestBody CreateOrderRequest request,
             Principal principal
     ) {
-        // find logged-in user
         AppUser user = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // create a new request with real userId
         CreateOrderRequest fixedRequest = new CreateOrderRequest(
                 user.getId(),
                 request.items(),

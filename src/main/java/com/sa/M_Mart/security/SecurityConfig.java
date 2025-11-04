@@ -38,18 +38,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        // Update to match your new API versioning
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
 
-                        // Seller routes
                         .requestMatchers("/api/seller/**").hasRole("SELLER")
 
-                        // Admin routes
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPERADMIN")
 
-                        // User routes
                         .requestMatchers("/api/user/**").hasRole("USER")
                         .requestMatchers("/api/address/**").hasRole("USER")
                         .requestMatchers("/api/cart/**").hasRole("USER")
@@ -67,10 +62,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontendUrl)); // add localhost if dev
+        config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // important for cookies
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

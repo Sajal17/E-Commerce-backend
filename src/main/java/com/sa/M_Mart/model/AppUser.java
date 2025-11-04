@@ -1,7 +1,6 @@
 package com.sa.M_Mart.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -31,7 +30,7 @@ public class AppUser {
     private Long id;
 
     @Column(nullable = false,unique = true)
-    private String username; //login identifier, can be email or phone
+    private String username;
 
     @Column(unique = true)
     private String email;
@@ -50,18 +49,15 @@ public class AppUser {
     private String firstName;
     private String lastName;
 
-    // role store in a separate table
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();
 
-    // One user can have multiple addresses
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<UserAddress> addresses;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SellerProfile sellerProfile;
 
-    // Optional timestamps
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

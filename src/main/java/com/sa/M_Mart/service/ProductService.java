@@ -15,7 +15,7 @@ public interface ProductService {
 
     ProductResponseDTO getProduct(Long productId);
 
-    List<ProductResponseDTO> getAllProducts(); // For customers
+    List<ProductResponseDTO> getAllProducts();
 
     List<ProductResponseDTO> getProductsByCategory(String category);
 

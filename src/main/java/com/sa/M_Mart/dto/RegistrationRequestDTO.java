@@ -3,11 +3,10 @@ package com.sa.M_Mart.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
 
 public record RegistrationRequestDTO(
         @NotBlank(message = "Username is required")
-        String username,  // can be email or phone
+        String username,
 
         @Email(message = "Invalid email format")
         String email,
@@ -24,5 +23,5 @@ public record RegistrationRequestDTO(
         String firstName,
         String lastName,
 
-        String role  // USER, ADMIN, SELLER
+        String role
 ) {}

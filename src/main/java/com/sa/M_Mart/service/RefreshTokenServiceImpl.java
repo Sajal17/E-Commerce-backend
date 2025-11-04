@@ -18,7 +18,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    @Value("${jwt.refresh-token.expiry-seconds:2592000}") // default 30 days
+    @Value("${jwt.refresh-token.expiry-seconds:2592000}")
     private long refreshTokenExpirySeconds;
 
     @Override

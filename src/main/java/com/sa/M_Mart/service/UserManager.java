@@ -40,8 +40,8 @@ public class UserManager {
                 .email(email)
                 .phoneNumber(phone)
                 .password(passwordEncoder.encode(password))
-                .roles(roles)  // backend assigns roles
-                .verified(false)  // or false if you want email verification
+                .roles(roles)
+                .verified(false)
                 .build();
 
         return userRepository.save(user);

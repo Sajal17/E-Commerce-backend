@@ -24,7 +24,6 @@ public class UserController {
 
     private final UserService userService;
 
-    // GET current user profile
     @GetMapping("/profile")
     public ResponseEntity<UserResponseDTO> getProfile(Principal principal) {
         UserResponseDTO dto = userService.getUserByUsername(principal.getName());
@@ -32,13 +31,11 @@ public class UserController {
         return ResponseEntity.ok(dto); // here you need 'toDTO'
     }
 
-    // UPDATE current user profile
     @PutMapping("/profile")
     public ResponseEntity<UserResponseDTO> updateProfile(
             Principal principal,
             @RequestBody UserUpdateRequestDTO dto
     ) {
-        // Service already returns UserResponseDTO after updating
         UserResponseDTO updatedUserDTO = userService.updateUserProfile(principal.getName(), dto);
 
         return ResponseEntity.ok(updatedUserDTO);

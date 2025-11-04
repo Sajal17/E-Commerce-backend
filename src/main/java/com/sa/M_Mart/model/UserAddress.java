@@ -58,12 +58,10 @@ public class UserAddress {
     @Column(nullable = false)
     private String zip;
 
-    //Many addresses belong to one user
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = false)
     private AppUser user;
 
-    // Optional timestamps
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

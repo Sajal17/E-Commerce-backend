@@ -37,7 +37,7 @@ public class DataInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode(superAdminPassword))
                     .email(superAdminEmail)
                     .verified(true)
-                    .roles(new HashSet<>()) // empty set initially
+                    .roles(new HashSet<>())
                     .build();
 
             UserRole superAdminRole = new UserRole();
